@@ -1142,10 +1142,10 @@ dst_part_base=$dst_disk
 
 if [[ ${chk_disk: -1} =~ ^[0-9]$ ]]
 then
+	dst_part_base=${dst_disk}p
 	if [[ $dst_disk == *"mmcblk"* || $dst_disk == *"nvme"* ]]
 	then
 		SD_slot_dst=1
-		dst_part_base=${dst_disk}p
 		if    [ "$edit_fstab_name" == "" ] \
 		   && ! grep -q "^PARTUUID=" /etc/fstab
 		then
@@ -1154,7 +1154,8 @@ then
 		else
 			assumed_fstab_edit=0
 		fi
-	else
+	elif [[ $dst_disk != *"loop"* ]]
+	then
 		qecho $"
   Target disk $dst_disk ends with a digit so may be a partition.
   $PGM requires disk names like 'sda' and not partition names like 'sda1'."
